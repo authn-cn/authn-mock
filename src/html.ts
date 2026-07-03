@@ -56,6 +56,12 @@ Mock IdP,可一键端到端演示;ACS 会展示验签与断言解析结果。Met
 <p><a href="${issuer}/rs/">打开资源服务器说明 →</a> 一个受 Bearer access token 保护的 API(<code>${issuer}/rs/api</code>),
 演示 OAuth2 里 RP 之外的角色:校验令牌签名、过期与 scope 后返回受保护资源。</p>
 
+<h2>TOTP 验证器（第二因素）</h2>
+<p><a href="${issuer}/totp/">打开 TOTP 说明 →</a> 按 Base32 密钥计算当前验证码(<code>/totp/code</code>,充当认证器)或校验验证码(<code>/totp/verify</code>,带时间容错)。RFC 4226 / 6238。</p>
+
+<h2>WebAuthn RP（Passkey）</h2>
+<p><a href="${issuer}/webauthn/">打开 WebAuthn 演示 →</a> 自包含的依赖方:在浏览器里完整跑通 Passkey 注册与登录,服务端真实解析 attestation 并用注册公钥验证登录断言签名。</p>
+
 <h2>测试用户</h2>
 <table>
 <tr><th>user 参数</th><th>sub</th><th>email</th></tr>

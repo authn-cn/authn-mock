@@ -3,6 +3,8 @@ import { idpMetadata, samlSso } from './saml'
 import { spMetadata, spLogin, spAcs, spHome } from './saml-sp'
 import { rpHome, rpStart, rpCallback } from './rp'
 import { rsApi, rsHome } from './rs'
+import { totpHome, totpCode, totpVerify } from './totp'
+import { waHome, waRegisterOptions, waRegisterVerify, waLoginOptions, waLoginVerify } from './webauthn'
 import { homePage } from './html'
 
 export default {
@@ -62,6 +64,28 @@ export default {
         return rsHome(issuer)
       case '/rs/api':
         return rsApi(req)
+
+      // TOTP 验证器
+      case '/totp/':
+      case '/totp':
+        return totpHome(issuer)
+      case '/totp/code':
+        return totpCode(req)
+      case '/totp/verify':
+        return totpVerify(req)
+
+      // WebAuthn RP
+      case '/webauthn/':
+      case '/webauthn':
+        return waHome()
+      case '/webauthn/register/options':
+        return waRegisterOptions(req)
+      case '/webauthn/register/verify':
+        return waRegisterVerify(req)
+      case '/webauthn/login/options':
+        return waLoginOptions(req)
+      case '/webauthn/login/verify':
+        return waLoginVerify(req)
 
       default:
         return new Response('Not Found', { status: 404 })
