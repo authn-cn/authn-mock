@@ -21,10 +21,12 @@ export function homePage(issuer: string): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Authn Mock — OIDC OP</title><style>${STYLE}</style></head>
 <body>
-<h1>🧪 Authn Mock OIDC Provider</h1>
-<p class="warn"><strong>仅供开发与测试。</strong>签名私钥公开在源码中,任何人都可伪造本服务签发的令牌。生产系统绝不能信任此服务。</p>
+<h1>🧪 Authn Mock 认证服务</h1>
+<p class="warn"><strong>仅供开发与测试。</strong>签名私钥/证书公开在源码中,任何人都可伪造本服务签发的令牌或断言。生产系统绝不能信任此服务。</p>
 
-<h2>端点</h2>
+<p>提供三类 mock 角色:<strong>OIDC OP</strong>(身份提供方)、<strong>SAML IdP</strong>(身份提供方)、<strong>OIDC RP</strong>(客户端,可连接任意外部 OP)。</p>
+
+<h2>OIDC OP 端点</h2>
 <table>
 <tr><th>Discovery</th><td><a href="${issuer}/.well-known/openid-configuration"><code>${issuer}/.well-known/openid-configuration</code></a></td></tr>
 <tr><th>Authorize</th><td><code>${issuer}/oidc/authorize</code></td></tr>
@@ -32,6 +34,27 @@ export function homePage(issuer: string): string {
 <tr><th>UserInfo</th><td><code>${issuer}/oidc/userinfo</code></td></tr>
 <tr><th>JWKS</th><td><a href="${issuer}/oidc/jwks.json"><code>${issuer}/oidc/jwks.json</code></a></td></tr>
 </table>
+
+<h2>SAML IdP 端点</h2>
+<table>
+<tr><th>Metadata</th><td><a href="${issuer}/saml/idp/metadata"><code>${issuer}/saml/idp/metadata</code></a></td></tr>
+<tr><th>SSO（Redirect/POST）</th><td><code>${issuer}/saml/idp/sso</code></td></tr>
+</table>
+<p>把上面的 Metadata URL 导入你的 SP 即可对接。SP-initiated 直接向 SSO 端点发 AuthnRequest;
+IdP-initiated 可访问 <code>${issuer}/saml/idp/sso?user=alice&amp;sp=&lt;SP-entityID&gt;&amp;acs=&lt;SP-ACS-URL&gt;</code>。</p>
+
+<h2>SAML SP（服务提供方）</h2>
+<p><a href="${issuer}/saml/sp/">打开 SP 控制台 →</a> 作为 SP 与 IdP 配对完成 Web Browser SSO。默认对接本站
+Mock IdP,可一键端到端演示;ACS 会展示验签与断言解析结果。Metadata:
+<a href="${issuer}/saml/sp/metadata"><code>${issuer}/saml/sp/metadata</code></a></p>
+
+<h2>OIDC RP（客户端）</h2>
+<p><a href="${issuer}/rp/">打开 RP 控制台 →</a> 用本 mock 作为客户端,连接任意外部 OP / IdP(Keycloak、Auth0、Okta、Azure AD 或本站 Mock OP),
+完整走一遍登录并展示 Discovery、令牌、ID Token 验签与 UserInfo。</p>
+
+<h2>资源服务器（Resource Server）</h2>
+<p><a href="${issuer}/rs/">打开资源服务器说明 →</a> 一个受 Bearer access token 保护的 API(<code>${issuer}/rs/api</code>),
+演示 OAuth2 里 RP 之外的角色:校验令牌签名、过期与 scope 后返回受保护资源。</p>
 
 <h2>测试用户</h2>
 <table>
