@@ -1,6 +1,6 @@
 # authn-mock
 
-[authn-cn.github.io](https://authn-cn.github.io/) 配套的 **Mock 认证服务**,部署在 Cloudflare Workers 上。当前提供一个功能完整的 **Mock OIDC OP**(OpenID Provider),用于开发联调、集成测试与协议学习。
+[authn-cn.pages.dev](https://authn-cn.pages.dev/) 配套的 **Mock 认证服务**,部署在 Cloudflare Workers 上。当前提供一个功能完整的 **Mock OIDC OP**(OpenID Provider),用于开发联调、集成测试与协议学习。
 
 > ⚠️ **仅供测试**:签名私钥公开在 [src/keys.ts](src/keys.ts) 中,任何人都能伪造本服务签发的令牌。生产系统绝不能信任此服务。
 

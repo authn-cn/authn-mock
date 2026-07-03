@@ -51,7 +51,7 @@ export function homePage(issuer: string): string {
   -d client_id=demo</pre>
 
 <p>特性:PKCE(S256)、refresh_token(<code>scope</code> 含 <code>offline_access</code> 时签发)、client_credentials、CORS 全开。
-文档与协议讲解见 <a href="https://authn-cn.github.io/">authn-cn.github.io</a>。</p>
+文档与协议讲解见 <a href="https://authn-cn.pages.dev/">authn-cn.pages.dev</a>。</p>
 </body></html>`
 }
 
