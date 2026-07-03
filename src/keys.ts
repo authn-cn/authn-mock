@@ -1,0 +1,29 @@
+/**
+ * ⚠️ 测试专用密钥 —— 私钥故意公开在源码中!
+ * 这是 Mock 服务的设计:任何人都能验证/伪造本服务签发的令牌。
+ * 任何生产系统都绝不能信任由此密钥签名的任何内容。
+ */
+
+export const KID = 'authn-mock-2026'
+
+export const PRIVATE_JWK: JsonWebKey = {
+  kty: 'RSA',
+  alg: 'RS256',
+  n: 'l1PxOYrbKpkouB47fSgJ564vWgAJBn43_tNqZQOvRDMJxtFfLMAixyQxcDmis94Abv_sxvK8mIbHBXsxAsb0SAyEZBZXd_5eACGnbb6Y9Xn7OBO_va5MmOPAuf64MhrQhiO9G0XFxX-Qn6VnKiX5kWBEDyeDOXpBt9RT1vZFXbaHl-0QZCMFhIiC5v-Umx2fIAIwcm213h6a5LU0R5moPxq6LrAnVaXPPyVneVZMvranvEah5gLRRKpHX0ESilokXlsPFqFW9azbNfFCD36ZgWAWbMPc1egrRpGwNC3c4JSAf_5y_0d3YyUC7mFNx8LgWt1ScSpEraGfDur5qWGR_w',
+  e: 'AQAB',
+  d: 'FlT5ctP2jv1GQJGZltk7SPjwHPiHXHFxAwahG2IlUcu0ZCZOxNRf7YJ-V0DyLVgUOU1EXIHC6kFtinYJIA9LSnyqZvjTFK6xoZRV2IC5ovRK6hYkBDJ-NEvcC7a26RIC9uC8ThOIYaJ3LdAjftlW0KjjslbS6z8LBr1rV_xE9VS5viksxpCw2EFZH37TB6P3p6rk-I4FbilZyBlyRlFBfNJexdScVWc9icYxArNwCE0_6VFJudULHFYAXZLRyr2v6JZLN--w0ACcekXQAQWf6wJnfoDTkcN9exJvWegA9KITyS59imo-q6FK-9oTwKEpcwk6s-2jNBqfKt1_82dnHQ',
+  p: '1Lu7pP2A1dCOLP9slvIVNBgjI-HpfVOklGYjLA58-SNqSxLQsIFaRBB7wafNhp1WhUQxrpzvr0pVkug4dnQ2si1DGhCFK0MPW7nQpW5QGDxyqIDDv1m9PKVm2fx_2oXxPr8DhXO7dliOy9upNlVTjlyIBYdRXlKuzH4ThXOuBEU',
+  q: 'thsMDzpI5M8XPlZuELFbjRElxaCmXfABnfRQZ34_6ClCMv3EVB03d9UpxBN1Pxpd6zZQIpHwLmUvdP0z53hXSFzXpC4KrlU7lnanXGEVEb_ldkMhL9o9Iv90Ob9Crc6Ing83f15DYfZ78OzQKbE5Ct1Y8mj1SO9DC2IKAJtO-3M',
+  dp: 'glwIQLKXoG6MsUZUZKs0Exg3cGWfjw0SbV2pb_Xw3zq0iAyflYmupsbzD1ikuTjxK_j9-OJyfhgvGDb1YqEUY1sZI3-8Gyac4ribAsT2j-N634cIbNmw_NjejfYM4vvxOWIT5lNlLMBXwNR6fLEM4tARClJBqmtAck9P5xdcK4E',
+  dq: 'dbZ4DiPT2KuQz8fYr8ulbUNnUh8tS02IDg1OKAfw0WZSF1n4HZMhNsHAlLErOdYWXaOnGyGQyry3d3zwnzAn42u4LLViTBxmPzWFq25Jy0Zq0g5EloUQvd24yFc8h9MYdmtJqXhKQDmvFiZNzJV1VPONumxkGXgns2T1KD08Scc',
+  qi: 'i1zrHD8Bz7SvlisLW-P8KRgQKilPlQVn18ZP6FV7pHlVtF25MVYf1FmfhYH6SGPnvAqKhpPeL-Ikifqf_BLgW53icHZvLqNBS2fxfbCX7IaMql1ZXfo1huEimP4oHJqPj15V7qN6sk87rURYNNTDGtETAfcrbQEk5jyWWiAHNY4',
+}
+
+export const PUBLIC_JWK: JsonWebKey & { kid: string; use: string } = {
+  kty: 'RSA',
+  alg: 'RS256',
+  n: PRIVATE_JWK.n!,
+  e: PRIVATE_JWK.e!,
+  kid: KID,
+  use: 'sig',
+}
