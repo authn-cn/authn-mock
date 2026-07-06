@@ -64,6 +64,7 @@ export function idpMetadata(issuer: string): Response {
     headers: {
       'Content-Type': 'application/samlmetadata+xml; charset=utf-8',
       'Content-Disposition': 'inline; filename="authn-mock-idp-metadata.xml"',
+      'Access-Control-Allow-Origin': '*',
     },
   })
 }
@@ -275,7 +276,11 @@ export async function samlSso(req: Request, issuer: string): Promise<Response> {
     params = url.searchParams
   }
 
-  const htmlHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }
+  const htmlHeaders = {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+  }
 
   // 情况 A:已选定用户(本站回链 或 IdP-initiated),直接签发
   const chosenUser = params.get('user')
