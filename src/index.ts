@@ -6,6 +6,7 @@ import { rsApi, rsHome } from './rs'
 import { totpHome, totpCode, totpVerify } from './totp'
 import { waHome, waRegisterOptions, waRegisterVerify, waLoginOptions, waLoginVerify } from './webauthn'
 import { d1Store, handleMail, receiveEmail } from './mail'
+import { ldapHome, ldapEntries, ldapSearch } from './ldap'
 import { homePage } from './html'
 
 export interface Env {
@@ -97,6 +98,15 @@ export default {
         return waLoginOptions(req)
       case '/webauthn/login/verify':
         return waLoginVerify(req)
+
+      // LDAP 目录搜索模拟器
+      case '/ldap/':
+      case '/ldap':
+        return ldapHome(issuer)
+      case '/ldap/entries':
+        return ldapEntries()
+      case '/ldap/search':
+        return ldapSearch(req)
 
       default:
         return new Response('Not Found', { status: 404 })
