@@ -5,14 +5,25 @@ import { rpHome, rpStart, rpCallback } from './rp'
 import { rsApi, rsHome } from './rs'
 import { totpHome, totpCode, totpVerify } from './totp'
 import { waHome, waRegisterOptions, waRegisterVerify, waLoginOptions, waLoginVerify } from './webauthn'
+import { d1Store, handleMail, receiveEmail } from './mail'
 import { homePage } from './html'
 
+export interface Env {
+  DB: D1Database
+}
+
 export default {
-  async fetch(req: Request): Promise<Response> {
+  async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url)
     const issuer = url.origin
 
     if (req.method === 'OPTIONS') return corsPreflightResponse()
+
+    // Mock 邮件服务器(/mail/*)
+    if (url.pathname === '/mail' || url.pathname.startsWith('/mail/')) {
+      const res = await handleMail(req, url, d1Store(env.DB))
+      if (res) return res
+    }
 
     switch (url.pathname) {
       case '/':
@@ -91,4 +102,9 @@ export default {
         return new Response('Not Found', { status: 404 })
     }
   },
-} satisfies ExportedHandler
+
+  // Cloudflare Email Routing 把投递到本 Worker 的邮件送到这里,写入 Mock 收件箱(D1)。
+  async email(message: ForwardableEmailMessage, env: Env): Promise<void> {
+    await receiveEmail(message, d1Store(env.DB))
+  },
+} satisfies ExportedHandler<Env>

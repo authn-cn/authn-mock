@@ -62,6 +62,11 @@ Mock IdP,可一键端到端演示;ACS 会展示验签与断言解析结果。Met
 <h2>WebAuthn RP（Passkey）</h2>
 <p><a href="${issuer}/webauthn/">打开 WebAuthn 演示 →</a> 自包含的依赖方:在浏览器里完整跑通 Passkey 注册与登录,服务端真实解析 attestation 并用注册公钥验证登录断言签名。</p>
 
+<h2>邮件服务器(收件箱)</h2>
+<p><a href="${issuer}/mail/">打开 Mock 收件箱 →</a> 用 Cloudflare Email Routing 接收邮件,在线或用 API 查看,并自动抽取一次性验证码。
+联调邮件 OTP:发验证码到某地址后,<code>GET ${issuer}/mail/api/latest?to=&lt;地址&gt;</code> 即可取回;无需真实收信可
+<code>POST ${issuer}/mail/api/inject</code> 注入假邮件。</p>
+
 <h2>测试用户</h2>
 <table>
 <tr><th>user 参数</th><th>sub</th><th>email</th></tr>

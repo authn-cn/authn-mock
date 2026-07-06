@@ -4,3 +4,10 @@ compatibility_date = "2026-06-01"
 
 [observability]
 enabled = true
+
+# Mock 邮件服务器的收件箱存储(接收 Email Routing 投递的邮件)
+[[d1_databases]]
+binding = "DB"
+database_name = "authn-mock-mail"
+database_id = "3a7a144c-df69-4dde-826a-ab5ea6d67d88"
+migrations_dir = "migrations"
