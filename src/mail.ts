@@ -274,7 +274,7 @@ ${bodyBlock}
 <p class="warn"><strong>仅供测试。</strong>投递到这里的任何邮件都可被任何人读取,切勿发送真实敏感信息。收件保留 24 小时。</p>
 <p>用 Cloudflare Email Routing 把某个地址路由到本服务;发到该地址的邮件会出现在下面。也可 <code>POST /mail/api/inject</code> 注入假邮件联调。</p>
 <form class="bar" method="get" action="/mail/">
-<input type="text" name="to" value="${esc(to || '')}" placeholder="按收件地址过滤,如 alice@mail.authn.tech" />
+<input type="text" name="to" value="${esc(to || '')}" placeholder="按收件地址过滤,如 otp@authn.tech" />
 <button type="submit">过滤</button>
 </form>
 <table><thead><tr><th>时间(UTC)</th><th>From</th><th>To</th><th>主题</th><th>验证码</th></tr></thead>
