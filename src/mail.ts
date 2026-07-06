@@ -191,7 +191,9 @@ export async function handleMail(req: Request, url: URL, store: MailStore): Prom
   const to = url.searchParams.get('to')
 
   // ---- API ----
+  // 隐私:列表/最新/清空都必须指定具体收件地址,不允许全量查询。
   if (path === '/mail/api/messages') {
+    if (!to) return json({ error: '必须指定 to(具体收件地址);不支持无收件人的全量查询' }, 400)
     const limit = parseInt(url.searchParams.get('limit') || '50', 10) || 50
     return json({ messages: await store.list(to, limit) })
   }
@@ -201,8 +203,9 @@ export async function handleMail(req: Request, url: URL, store: MailStore): Prom
     return m ? json(m) : json({ error: 'not found' }, 404)
   }
   if (path === '/mail/api/latest') {
+    if (!to) return json({ error: '必须指定 to(具体收件地址)' }, 400)
     const m = await store.latest(to)
-    return m ? json(m) : json({ error: 'inbox empty', to: to ?? '(any)' }, 404)
+    return m ? json(m) : json({ error: 'inbox empty', to }, 404)
   }
   if (path === '/mail/api/inject') {
     if (req.method !== 'POST') return json({ error: 'need POST' }, 405)
@@ -226,6 +229,7 @@ export async function handleMail(req: Request, url: URL, store: MailStore): Prom
   }
   if (path === '/mail/api/clear') {
     if (req.method !== 'POST') return json({ error: 'need POST' }, 405)
+    if (!to) return json({ error: '必须指定 to(只按具体收件地址清空)' }, 400)
     return json({ ok: true, deleted: await store.clear(to) })
   }
 
@@ -254,6 +258,23 @@ ${bodyBlock}
 
   // ---- 在线收件箱 ----
   if (path === '/mail/' || path === '/mail') {
+    const searchForm = `<form class="bar" method="get" action="/mail/">
+<input type="text" name="to" value="${esc(to || '')}" placeholder="输入具体收件地址,如 otp@authn.tech" />
+<button type="submit">查看</button>
+</form>`
+    const header = `<h1>📬 Mock 邮件收件箱</h1>
+<p class="warn"><strong>仅供测试。</strong>投递到这里的邮件都可被知道收件地址的人读取,切勿发送真实敏感信息。收件保留 24 小时。</p>
+<p>用 Cloudflare Email Routing 把某个 <code>@authn.tech</code> 地址路由到本服务;发到该地址的邮件会出现在下面。也可 <code>POST /mail/api/inject</code> 注入假邮件联调。</p>`
+
+    // 隐私:必须指定具体收件人才列出,不提供无收件人的全量视图。
+    if (!to) {
+      return page(
+        'Mock 邮件收件箱',
+        `${header}${searchForm}
+<p class="muted">出于隐私考虑,需先输入一个具体收件地址才能查看;不提供“查看全部”。</p>`,
+      )
+    }
+
     const rows = await store.list(to, 100)
     const list = rows.length
       ? rows
@@ -261,25 +282,19 @@ ${bodyBlock}
             (m) => `<tr>
 <td>${fmtTime(m.received_at)}</td>
 <td>${esc(m.from_addr)}</td>
-<td>${esc(m.to_addr)}</td>
 <td><a href="/mail/view/${encodeURIComponent(m.id)}">${esc(m.subject || '(无主题)')}</a></td>
 <td class="code">${esc(m.code || '')}</td>
 </tr>`,
           )
           .join('')
-      : `<tr><td colspan="5" class="muted">收件箱为空。${to ? `没有发给 <code>${esc(to)}</code> 的邮件。` : ''}</td></tr>`
+      : `<tr><td colspan="4" class="muted">没有发给 <code>${esc(to)}</code> 的邮件。</td></tr>`
     return page(
       'Mock 邮件收件箱',
-      `<h1>📬 Mock 邮件收件箱</h1>
-<p class="warn"><strong>仅供测试。</strong>投递到这里的任何邮件都可被任何人读取,切勿发送真实敏感信息。收件保留 24 小时。</p>
-<p>用 Cloudflare Email Routing 把某个地址路由到本服务;发到该地址的邮件会出现在下面。也可 <code>POST /mail/api/inject</code> 注入假邮件联调。</p>
-<form class="bar" method="get" action="/mail/">
-<input type="text" name="to" value="${esc(to || '')}" placeholder="按收件地址过滤,如 otp@authn.tech" />
-<button type="submit">过滤</button>
-</form>
-<table><thead><tr><th>时间(UTC)</th><th>From</th><th>To</th><th>主题</th><th>验证码</th></tr></thead>
+      `${header}${searchForm}
+<p>收件地址:<code>${esc(to)}</code></p>
+<table><thead><tr><th>时间(UTC)</th><th>From</th><th>主题</th><th>验证码</th></tr></thead>
 <tbody>${list}</tbody></table>
-<p class="muted">API:<code>GET /mail/api/messages?to=</code> · <code>GET /mail/api/latest?to=</code> · <code>POST /mail/api/inject</code></p>`,
+<p class="muted">API:<code>GET /mail/api/messages?to=${esc(to)}</code> · <code>GET /mail/api/latest?to=${esc(to)}</code></p>`,
     )
   }
 

@@ -92,10 +92,23 @@ describe('handleMail HTTP', () => {
     expect(res!.status).toBe(400)
   })
 
-  it('serves the inbox HTML', async () => {
-    const res = await call(memStore(), '/mail/')
-    expect(res!.headers.get('Content-Type')).toContain('text/html')
-    expect(await res!.text()).toContain('Mock 邮件收件箱')
+  it('requires a specific recipient for list/latest/clear', async () => {
+    const store = memStore()
+    expect((await call(store, '/mail/api/messages'))!.status).toBe(400)
+    expect((await call(store, '/mail/api/latest'))!.status).toBe(400)
+    expect((await call(store, '/mail/api/clear', { method: 'POST' }))!.status).toBe(400)
+  })
+
+  it('inbox without to shows only a search box (no full list)', async () => {
+    const store = memStore()
+    await call(store, '/mail/api/inject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: 'someone@authn.tech', subject: 'secret', text: 'hi' }),
+    })
+    const html = await (await call(store, '/mail/'))!.text()
+    expect(html).toContain('Mock 邮件收件箱')
+    expect(html).not.toContain('secret') // 不泄露任何具体邮件
   })
 
   it('returns null for non-mail paths', async () => {
