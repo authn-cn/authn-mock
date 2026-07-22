@@ -7,6 +7,32 @@ import { totpHome, totpCode, totpVerify } from './totp'
 import { waHome, waRegisterOptions, waRegisterVerify, waLoginOptions, waLoginVerify } from './webauthn'
 import { d1Store, handleMail, receiveEmail } from './mail'
 import { ldapHome, ldapEntries, ldapSearch } from './ldap'
+import {
+  wxLoginJs,
+  qrconnect,
+  poll,
+  scan,
+  snsAccessToken,
+  snsRefreshToken,
+  snsUserinfo,
+  snsAuth,
+  wechatHome,
+  wechatCallback,
+  d1TicketStore,
+  memTicketStore,
+  type TicketStore,
+} from './wechat'
+import {
+  wwLoginJs,
+  qrConnect,
+  scan as wecomScan,
+  gettoken,
+  authGetUserInfo,
+  userGet,
+  getUserDetail,
+  wecomHome,
+  wecomCallback,
+} from './wecom'
 import { homePage } from './html'
 
 export interface Env {
@@ -17,6 +43,10 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url)
     const issuer = url.origin
+
+    // 微信扫码会话存储:有 D1 绑定用 D1(生产,跨 isolate 持久),否则内存回退(测试)。
+    const wechatTickets = (): TicketStore =>
+      env?.DB ? d1TicketStore(env.DB) : memTicketStore()
 
     if (req.method === 'OPTIONS') return corsPreflightResponse()
 
@@ -98,6 +128,52 @@ export default {
         return waLoginOptions(req)
       case '/webauthn/login/verify':
         return waLoginVerify(req)
+
+      // Mock 微信扫码登录(网站应用)——与官方同参数/同响应,仅域名不同
+      case '/wechat':
+      case '/wechat/':
+        return wechatHome(issuer)
+      case '/wechat/wxLogin.js':
+        return wxLoginJs(issuer)
+      case '/wechat/callback':
+        return wechatCallback(req, issuer)
+      case '/wechat/scan':
+        return scan(req, wechatTickets())
+      case '/connect/qrconnect':
+        return qrconnect(req, issuer, wechatTickets())
+      case '/connect/poll':
+        return poll(req, wechatTickets())
+      case '/sns/oauth2/access_token':
+        return snsAccessToken(req)
+      case '/sns/oauth2/refresh_token':
+        return snsRefreshToken(req)
+      case '/sns/userinfo':
+        return snsUserinfo(req)
+      case '/sns/auth':
+        return snsAuth(req)
+
+      // Mock 企业微信(WeCom)扫码登录——所有端点收敛在 /wecom 下,与官方同参数/同响应
+      case '/wecom':
+      case '/wecom/':
+        return wecomHome(issuer)
+      case '/wecom/wwLogin.js':
+        return wwLoginJs(issuer)
+      case '/wecom/callback':
+        return wecomCallback(req, issuer)
+      case '/wecom/scan':
+        return wecomScan(req, wechatTickets())
+      case '/wecom/sso/qrConnect':
+        return qrConnect(req, issuer, wechatTickets())
+      case '/wecom/sso/poll':
+        return poll(req, wechatTickets())
+      case '/wecom/cgi-bin/gettoken':
+        return gettoken(req)
+      case '/wecom/cgi-bin/auth/getuserinfo':
+        return authGetUserInfo(req)
+      case '/wecom/cgi-bin/user/get':
+        return userGet(req)
+      case '/wecom/cgi-bin/auth/getuserdetail':
+        return getUserDetail(req)
 
       // LDAP 目录搜索模拟器
       case '/ldap/':

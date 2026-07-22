@@ -67,6 +67,12 @@ Mock IdP,可一键端到端演示;ACS 会展示验签与断言解析结果。Met
 联调邮件 OTP:发验证码到某地址后,<code>GET ${issuer}/mail/api/latest?to=&lt;地址&gt;</code> 即可取回;无需真实收信可
 <code>POST ${issuer}/mail/api/inject</code> 注入假邮件。</p>
 
+<h2>微信扫码登录（Mock 微信开放平台）</h2>
+<p><a href="${issuer}/wechat/">打开 Mock 微信登录 →</a> 与微信开放平台"网站应用"扫码登录 <strong>输入输出完全一致,只是域名不同</strong>:同名 <code>WxLogin</code> JS SDK、相同回跳 <code>redirect_uri?code=&amp;state=</code>、相同的 <code>/sns/oauth2/access_token</code> 与 <code>/sns/userinfo</code> 接口字段。扫码也跳转到本站,确认后返回固定测试用户。</p>
+
+<h2>企业微信扫码登录（Mock WeCom）</h2>
+<p><a href="${issuer}/wecom/">打开 Mock 企业微信登录 →</a> 与企业微信官方网页扫码登录 <strong>输入输出一致</strong>:同名 <code>WwLogin</code> SDK、相同回跳 <code>redirect_uri?code=&amp;state=</code>、按企业微信规范分三步取用户信息(<code>gettoken</code> → <code>auth/getuserinfo</code> → <code>user/get</code>)。所有端点收敛在 <code>${issuer}/wecom</code> 下。扫码也跳转到本站,确认后返回固定测试成员。</p>
+
 <h2>LDAP 目录(搜索模拟器)</h2>
 <p><a href="${issuer}/ldap/">打开 Mock LDAP 说明 →</a> 用 HTTP/JSON 暴露固定示例目录并按 RFC 4515 过滤器求值(非真 LDAP 协议;Workers 无法监听 TCP)。
 搜索:<code>${issuer}/ldap/search?base=&amp;scope=&amp;filter=</code>。</p>

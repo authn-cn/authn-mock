@@ -21,6 +21,14 @@ jobs:
       - name: 运行测试
         run: npm test
 
+      # 先应用 D1 迁移(如微信/企业微信扫码会话表 wechat_tickets),再部署新代码
+      - name: 应用 D1 迁移
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply authn-mock-mail --remote
+
       - name: 部署到 Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
